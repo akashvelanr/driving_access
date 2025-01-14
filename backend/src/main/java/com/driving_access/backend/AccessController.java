@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 //import java.io.IOException;
 import java.util.Base64;
 
-
 @RestController
 @RequestMapping("/fingerprint")
 public class AccessController {
@@ -46,7 +45,7 @@ public class AccessController {
             fp_matcher.FingerprintMatchResult result = matcher.matchFingerprints(templateBytes);
 
             if (result.getError() != null) {
-                return ResponseEntity.status(500).body(result.getError());
+                return ResponseEntity.status(456).body(result);
             }
 
             // Return match result
@@ -56,4 +55,10 @@ public class AccessController {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
+
+    @GetMapping("/mat")
+    public ResponseEntity<Object> mat(@RequestParam String a) {
+        return ResponseEntity.status(500).body(a);
+    }
+
 }

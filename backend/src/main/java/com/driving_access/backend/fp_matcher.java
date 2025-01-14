@@ -5,9 +5,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Base64;
 
 public class fp_matcher {
 
+    @SuppressWarnings("null")
     public FingerprintMatchResult matchFingerprints(byte[] templateBytes) {
         String url = "jdbc:sqlite:fingerprint.db";
         String sql = "SELECT name, template, eligibility FROM fingerprints";
@@ -18,10 +20,12 @@ public class fp_matcher {
                 ResultSet rs = pstmt.executeQuery()) {
 
             boolean found = false;
-            FingerprintTemplate template = new FingerprintTemplate(templateBytes);
+            FingerprintImage image = new FingerprintImage(templateBytes);
+            FingerprintTemplate template = new FingerprintTemplate(image);
             FingerprintMatcher matcher = new FingerprintMatcher(template);
             String match = null;
             Integer eligible = null;
+            byte[] matchTemplate = null;
             double max = Double.NEGATIVE_INFINITY;
 
             while (rs.next()) {
@@ -36,6 +40,7 @@ public class fp_matcher {
                     max = similarity;
                     match = name;
                     eligible = eligibility;
+                    matchTemplate = storedTemplate;
                 }
                 if (max > 50) {
                     break;
@@ -47,6 +52,9 @@ public class fp_matcher {
                 result.setName(match);
                 result.setEligibility(eligible);
                 result.setSimilarity(max);
+                if (eligible == 1) {
+                    result.setMatchTempleteString(Base64.getEncoder().encodeToString(matchTemplate));
+                }
             }
 
             if (!found) {
@@ -64,6 +72,7 @@ public class fp_matcher {
     public static class FingerprintMatchResult {
         private String name;
         private Integer eligibility;
+        private String matchTempleteString;
         private Double similarity;
         private String error;
 
@@ -82,6 +91,14 @@ public class fp_matcher {
 
         public void setEligibility(Integer eligibility) {
             this.eligibility = eligibility;
+        }
+
+        public String getMatchTempleteString() {
+            return matchTempleteString;
+        }
+
+        public void setMatchTempleteString(String matchTempleteString) {
+            this.matchTempleteString = matchTempleteString;
         }
 
         public Double getSimilarity() {
