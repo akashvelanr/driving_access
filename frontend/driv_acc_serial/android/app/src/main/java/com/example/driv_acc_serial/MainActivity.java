@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Base64;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -240,7 +240,7 @@ public class MainActivity extends FlutterActivity {
                                     if (connection != null) {
                                         connection.close();
                                     }
-                                } catch (IOException ignored) {
+                                } catch (Error ignored) {
                                 }
                             }
                         }).start();
